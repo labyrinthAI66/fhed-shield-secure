@@ -1,0 +1,162 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fintech Insurance Portal Design System - FHE Protected Underwriting
+All colors MUST be HSL for proper theming.
+*/
+
+@layer base {
+  :root {
+    /* Base colors - Professional fintech palette */
+    --background: 220 25% 8%;
+    --foreground: 210 20% 98%;
+
+    /* Card system */
+    --card: 220 25% 10%;
+    --card-foreground: 210 15% 95%;
+
+    --popover: 220 25% 12%;
+    --popover-foreground: 210 15% 95%;
+
+    /* Primary - Deep fintech blue */
+    --primary: 210 100% 56%;
+    --primary-foreground: 210 20% 98%;
+    --primary-glow: 210 100% 65%;
+
+    /* Secondary - Professional teal */
+    --secondary: 180 25% 25%;
+    --secondary-foreground: 180 15% 95%;
+
+    /* Muted elements */
+    --muted: 220 15% 15%;
+    --muted-foreground: 210 10% 65%;
+
+    /* Accent - Security green */
+    --accent: 142 76% 36%;
+    --accent-foreground: 142 20% 98%;
+    --accent-glow: 142 76% 45%;
+
+    /* Status colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 20% 98%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 142 20% 98%;
+
+    --warning: 45 93% 47%;
+    --warning-foreground: 45 20% 98%;
+
+    /* Border and input */
+    --border: 220 15% 20%;
+    --input: 220 15% 18%;
+    --ring: 210 100% 56%;
+
+    /* Custom gradients for fintech styling */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-security: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-glow)));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(220 25% 12%));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+
+    /* Shadows with security theme */
+    --shadow-glow: 0 0 30px hsl(var(--primary) / 0.15);
+    --shadow-security: 0 0 25px hsl(var(--accent) / 0.2);
+    --shadow-card: 0 8px 32px hsl(220 25% 4% / 0.4);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-medium;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-security {
+    background: var(--gradient-security);
+  }
+  
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .shadow-security {
+    box-shadow: var(--shadow-security);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+
+  .animate-rotate {
+    animation: rotate 8s linear infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse-glow {
+  from {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.2);
+  }
+  to {
+    box-shadow: 0 0 40px hsl(var(--primary) / 0.4);
+  }
+}
