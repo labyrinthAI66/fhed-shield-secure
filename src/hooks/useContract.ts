@@ -1,43 +1,46 @@
-import { useContract, useContractRead, useContractWrite, useAccount } from 'wagmi';
+import { useReadContract, useWriteContract, useAccount } from 'wagmi';
 import { FHEShieldSecureABI } from '../lib/contractABI';
 
 const CONTRACT_ADDRESS = '0x...'; // Replace with deployed contract address
 
 export const useFHEShieldSecure = () => {
   const { address } = useAccount();
-  
-  const contract = useContract({
-    address: CONTRACT_ADDRESS,
-    abi: FHEShieldSecureABI,
-  });
 
   return {
-    contract,
     address,
+    contractAddress: CONTRACT_ADDRESS,
   };
 };
 
 export const useSubmitAssessment = () => {
-  const { write, isLoading, error } = useContractWrite({
-    address: CONTRACT_ADDRESS,
-    abi: FHEShieldSecureABI,
-    functionName: 'submitAssessment',
-  });
+  const { writeContract, isPending, error } = useWriteContract();
+
+  const submitAssessment = async (args: any) => {
+    return writeContract({
+      address: CONTRACT_ADDRESS as `0x${string}`,
+      abi: FHEShieldSecureABI,
+      functionName: 'submitAssessment',
+      args: args.args,
+      value: args.value,
+    });
+  };
 
   return {
-    submitAssessment: write,
-    isLoading,
+    submitAssessment,
+    isLoading: isPending,
     error,
   };
 };
 
 export const useUserProfile = (userAddress?: string) => {
-  const { data, isLoading, error } = useContractRead({
-    address: CONTRACT_ADDRESS,
+  const { data, isLoading, error } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
     abi: FHEShieldSecureABI,
     functionName: 'getUserProfile',
-    args: userAddress ? [userAddress] : undefined,
-    enabled: !!userAddress,
+    args: userAddress ? [userAddress as `0x${string}`] : undefined,
+    query: {
+      enabled: !!userAddress,
+    },
   });
 
   return {
@@ -48,12 +51,14 @@ export const useUserProfile = (userAddress?: string) => {
 };
 
 export const useUserAssessments = (userAddress?: string) => {
-  const { data, isLoading, error } = useContractRead({
-    address: CONTRACT_ADDRESS,
+  const { data, isLoading, error } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
     abi: FHEShieldSecureABI,
     functionName: 'getUserAssessments',
-    args: userAddress ? [userAddress] : undefined,
-    enabled: !!userAddress,
+    args: userAddress ? [userAddress as `0x${string}`] : undefined,
+    query: {
+      enabled: !!userAddress,
+    },
   });
 
   return {
@@ -64,8 +69,8 @@ export const useUserAssessments = (userAddress?: string) => {
 };
 
 export const useContractStats = () => {
-  const { data, isLoading, error } = useContractRead({
-    address: CONTRACT_ADDRESS,
+  const { data, isLoading, error } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
     abi: FHEShieldSecureABI,
     functionName: 'getContractStats',
   });
