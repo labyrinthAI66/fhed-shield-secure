@@ -44,6 +44,7 @@ export const FHEShieldSecureABI = [
         "name": "assessmentId",
         "type": "bytes32"
       },
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "timestamp",
