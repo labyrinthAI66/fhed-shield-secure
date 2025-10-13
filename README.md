@@ -4,6 +4,14 @@
 
 Transform your financial risk assessment with cutting-edge Fully Homomorphic Encryption technology. Process sensitive data without ever decrypting it.
 
+## 🚀 Live Demo
+
+- **Frontend**: [fhed-shield-secure.vercel.app](https://fhed-shield-secure.vercel.app)
+- **Contract**: `0xD6C2588486aAaF439ABCDeA17C9896C8c5527b79` (Sepolia)
+- **Network**: Ethereum Sepolia Testnet
+- **Status**: ✅ **Fully Deployed & Functional**
+- **Demo Video**: [Watch Demo](./demo.mp4) (6.9MB, 2:05 duration)
+
 ## ✨ What Makes Us Different
 
 - 🛡️ **Zero-Knowledge Processing**: Your data never leaves encryption
@@ -53,6 +61,23 @@ npm run dev
 | **FHE** | Zama FHE Oracle | Encrypted computations |
 | **Blockchain** | Ethereum Sepolia | Smart contract execution |
 | **Build** | Vite | Fast development |
+
+## 🛠️ Technical Implementation
+
+### FHE Encryption Flow
+1. **Client-Side Encryption**: User data encrypted using Zama FHE SDK
+2. **Smart Contract Processing**: Encrypted data processed on-chain
+3. **Real-time Decryption**: Users can decrypt their own data
+4. **ACL Permissions**: Fine-grained access control for encrypted data
+
+### Key Features Implemented
+- ✅ **FHE Data Encryption**: All assessment data encrypted before submission
+- ✅ **Real-time Risk Calculation**: FHE computations on encrypted data
+- ✅ **User-Controlled Decryption**: Only data owners can decrypt
+- ✅ **Secure Key Management**: EIP712 signatures for decryption
+- ✅ **Responsive UI**: Modern design with real-time feedback
+- ✅ **Error Handling**: Comprehensive error management
+- ✅ **Type Safety**: Full TypeScript implementation
 
 ## 📋 Features
 

@@ -199,9 +199,6 @@ export const UnderwritingDashboard = () => {
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                 <span>Refresh</span>
               </Button>
-              <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
-                FHE Protected
-              </Badge>
             </div>
           </div>
         </CardHeader>

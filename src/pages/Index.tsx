@@ -15,10 +15,6 @@ const Index = () => {
       <main className="flex-1 container mx-auto px-6 py-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6">
-            <Shield className="w-4 h-4 text-accent mr-2" />
-            <span className="text-sm font-medium text-accent">FHE Protected</span>
-          </div>
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             <span className="bg-gradient-hero bg-clip-text text-transparent">
