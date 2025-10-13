@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAccount } from "wagmi";
-import { ethers } from "ethers";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,17 +13,20 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Shield, Lock, ArrowLeft, ArrowRight, FileText, Building, DollarSign } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { useSubmitAssessment } from "@/hooks/useContract";
+import { useSubmitAssessment, AssessmentFormData } from "@/hooks/useContract";
+import { useZamaInstance } from "@/hooks/useZamaInstance";
+import { useEthersSigner } from "@/hooks/useEthersSigner";
 
 const SecureAssessment = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { address, isConnected } = useAccount();
   const { submitAssessment, isLoading } = useSubmitAssessment();
+  const { instance, isLoading: fheLoading, error: fheError } = useZamaInstance();
   const [currentStep, setCurrentStep] = useState(1);
   const [isEncrypting, setIsEncrypting] = useState(false);
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<AssessmentFormData>({
     // Basic Information
     companyName: "",
     industry: "",
@@ -76,29 +78,21 @@ const SecureAssessment = () => {
       return;
     }
 
+    if (!instance) {
+      toast({
+        title: "FHE Service Not Ready",
+        description: fheError || "FHE encryption service is initializing. Please wait...",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsEncrypting(true);
     
     try {
-      // FHE encryption simulation - in production, this would use Zama FHE
-      const formDataString = JSON.stringify(formData);
-      const encoder = new TextEncoder();
-      const dataBytes = encoder.encode(formDataString);
-      
-      // Simulate FHE encryption by creating a secure hash
-      const crypto = window.crypto;
-      const hashBuffer = await crypto.subtle.digest('SHA-256', dataBytes);
-      const hashArray = new Uint8Array(hashBuffer);
-      const encryptedData = Array.from(hashArray);
-      
-      // Convert to bytes for smart contract
-      const encryptedBytes = new Uint8Array(encryptedData);
-      const depositAmount = ethers.utils.parseEther("0.01"); // 0.01 ETH deposit
-      
-      // Submit to smart contract with encrypted data
-      await submitAssessment({
-        args: [encryptedBytes, depositAmount],
-        value: depositAmount,
-      });
+      // Submit assessment with FHE encryption
+      const depositAmount = "0.01"; // 0.01 ETH deposit
+      await submitAssessment(formData, depositAmount);
       
       toast({
         title: "Assessment Encrypted & Submitted",
@@ -409,7 +403,7 @@ const SecureAssessment = () => {
                   <Button
                     variant="security"
                     onClick={handleSubmit}
-                    disabled={isEncrypting || isLoading || !isConnected}
+                    disabled={isEncrypting || isLoading || !isConnected || !instance || fheLoading}
                     className="shadow-security"
                   >
                     {isEncrypting || isLoading ? (
@@ -421,6 +415,11 @@ const SecureAssessment = () => {
                       <>
                         <Shield className="w-4 h-4 mr-2" />
                         Connect Wallet First
+                      </>
+                    ) : !instance || fheLoading ? (
+                      <>
+                        <Lock className="w-4 h-4 mr-2" />
+                        Initializing FHE...
                       </>
                     ) : (
                       <>

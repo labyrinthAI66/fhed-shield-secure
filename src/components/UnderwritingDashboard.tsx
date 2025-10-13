@@ -1,64 +1,155 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Shield, Lock, Eye, FileText, TrendingUp, AlertCircle } from "lucide-react";
+import { Shield, Lock, Eye, FileText, TrendingUp, AlertCircle, RefreshCw, Unlock } from "lucide-react";
+import { useAccount } from "wagmi";
+import { useReadContract } from "wagmi";
+import contractABI from "@/lib/contractABI.json";
+import { useDecryptAssessment } from "@/hooks/useContract";
+import { useToast } from "@/hooks/use-toast";
+
+const CONTRACT_ADDRESS = '0xD6C2588486aAaF439ABCDeA17C9896C8c5527b79';
 
 export const UnderwritingDashboard = () => {
-  const riskProfiles = [
-    {
-      id: "UW-2024-001",
-      applicant: "Corporate Entity Alpha",
-      riskLevel: "Low",
-      premium: "$2,450",
-      status: "encrypted",
-      confidence: 94,
-    },
-    {
-      id: "UW-2024-002", 
-      applicant: "Tech Startup Beta",
-      riskLevel: "Medium",
-      premium: "$3,200",
-      status: "encrypted",
-      confidence: 87,
-    },
-    {
-      id: "UW-2024-003",
-      applicant: "Manufacturing Corp",
-      riskLevel: "High",
-      premium: "$5,100",
-      status: "finalized",
-      confidence: 91,
-    },
-  ];
+  const { address } = useAccount();
+  const [assessments, setAssessments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [decrypting, setDecrypting] = useState<string | null>(null);
+  const [decryptedData, setDecryptedData] = useState<Record<string, any>>({});
+  const { toast } = useToast();
+  const { decryptAssessment } = useDecryptAssessment();
+
+  // 获取合约统计信息
+  const { data: contractStats } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
+    abi: contractABI.abi,
+    functionName: 'getContractStats',
+  });
+
+  // 获取总评估数量
+  const { data: totalAssessments } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
+    abi: contractABI.abi,
+    functionName: 'totalAssessments',
+  });
+
+  useEffect(() => {
+    // 直接测试合约调用
+    const testContract = async () => {
+      if (!address) return;
+      
+      try {
+        console.log('Testing contract calls...');
+        console.log('Contract address:', CONTRACT_ADDRESS);
+        console.log('User address:', address);
+        
+        // 测试 getUserAssessments
+        const { ethers } = await import('ethers');
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI.abi, provider);
+        
+        console.log('Calling getUserAssessments...');
+        const userAssessments = await contract.getUserAssessments(address);
+        console.log('getUserAssessments result:', userAssessments);
+        console.log('getUserAssessments length:', userAssessments.length);
+        console.log('getUserAssessments type:', typeof userAssessments);
+        console.log('getUserAssessments array:', Array.from(userAssessments));
+        
+        // 测试 totalAssessments
+        const totalAssessments = await contract.totalAssessments();
+        console.log('totalAssessments:', totalAssessments.toString());
+        
+        // 测试 getContractStats
+        const stats = await contract.getContractStats();
+        console.log('getContractStats:', stats);
+        
+        if (userAssessments && userAssessments.length > 0) {
+          console.log('Found assessments:', userAssessments.length);
+          setAssessments(userAssessments.map((id: string, index: number) => ({
+            id: id,
+            user: address,
+            timestamp: Date.now() / 1000,
+            isProcessed: true,
+            isApproved: false,
+            depositAmount: '10000000000000000',
+          })));
+        } else {
+          console.log('No assessments found');
+          setAssessments([]);
+        }
+      } catch (error) {
+        console.error('Contract test failed:', error);
+        setAssessments([]);
+      }
+    };
+    
+    testContract();
+  }, [address]);
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    // 简单刷新
+    window.location.reload();
+    setLoading(false);
+  };
+
+
+  const handleDecrypt = async (assessmentId: string) => {
+    if (!assessmentId) return;
+    
+    setDecrypting(assessmentId);
+    try {
+      const result = await decryptAssessment(assessmentId);
+      setDecryptedData(prev => ({
+        ...prev,
+        [assessmentId]: result
+      }));
+      
+      toast({
+        title: "Decryption Successful",
+        description: "Assessment data has been decrypted",
+      });
+    } catch (error) {
+      console.error('Decryption failed:', error);
+      toast({
+        title: "Decryption Failed",
+        description: error instanceof Error ? error.message : "An error occurred during decryption",
+        variant: "destructive",
+      });
+    } finally {
+      setDecrypting(null);
+    }
+  };
 
   const metrics = [
     {
-      title: "Total Applications",
-      value: "127",
-      change: "+12%",
+      title: "My Assessments",
+      value: assessments.length.toString(),
+      change: "submitted",
       icon: FileText,
       color: "text-primary",
     },
     {
-      title: "Risk Score Avg",
-      value: "7.2",
-      change: "+0.3",
-      icon: TrendingUp,
-      color: "text-accent",
+      title: "Decrypted",
+      value: Object.keys(decryptedData).length.toString(),
+      change: "viewable",
+      icon: Unlock,
+      color: "text-green-500",
     },
     {
-      title: "Encrypted Cases",
-      value: "84",
-      change: "secure",
+      title: "Encrypted",
+      value: (assessments.length - Object.keys(decryptedData).length).toString(),
+      change: "locked",
       icon: Lock,
       color: "text-warning",
     },
     {
-      title: "Active Reviews",
-      value: "23",
-      change: "-5%",
-      icon: AlertCircle,
-      color: "text-destructive",
+      title: "Total Assessments",
+      value: totalAssessments ? totalAssessments.toString() : "0",
+      change: "all time",
+      icon: TrendingUp,
+      color: "text-accent",
     },
   ];
 
@@ -91,65 +182,113 @@ export const UnderwritingDashboard = () => {
             <div>
               <CardTitle className="flex items-center space-x-2">
                 <Shield className="w-5 h-5 text-accent" />
-                <span>Risk Assessment Queue</span>
+                <span>My Assessments</span>
               </CardTitle>
               <CardDescription>
-                Underwriting data protected by Fully Homomorphic Encryption
+                Assessment data protected by FHE encryption, click to decrypt and view details
               </CardDescription>
             </div>
-            <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
-              FHE Protected
-            </Badge>
+            <div className="flex items-center space-x-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleRefresh}
+                disabled={loading}
+                className="flex items-center space-x-1"
+              >
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                <span>Refresh</span>
+              </Button>
+              <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
+                FHE Protected
+              </Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {riskProfiles.map((profile) => (
-            <div
-              key={profile.id}
-              className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border/50 transition-smooth hover:bg-muted/50"
-            >
-              <div className="flex items-center space-x-4">
-                <div className="flex flex-col">
-                  <span className="font-medium text-foreground">{profile.id}</span>
-                  <span className="text-sm text-muted-foreground">{profile.applicant}</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-6">
-                <div className="text-center">
-                  <div className="text-sm font-medium text-foreground">{profile.premium}</div>
-                  <div className="text-xs text-muted-foreground">Premium</div>
-                </div>
-                
-                <div className="text-center">
-                  <div className="text-sm font-medium text-foreground">{profile.confidence}%</div>
-                  <div className="text-xs text-muted-foreground">Confidence</div>
-                </div>
-                
-                <Badge 
-                  variant={profile.riskLevel === "Low" ? "secondary" : profile.riskLevel === "Medium" ? "outline" : "destructive"}
-                  className="min-w-[60px]"
-                >
-                  {profile.riskLevel}
-                </Badge>
-                
-                <div className="flex items-center space-x-2">
-                  {profile.status === "encrypted" ? (
-                    <Lock className="w-4 h-4 text-warning" />
-                  ) : (
-                    <Eye className="w-4 h-4 text-accent" />
-                  )}
-                  <Button 
-                    size="sm" 
-                    variant="ghost"
-                    className="text-primary hover:text-primary-glow"
-                  >
-                    {profile.status === "encrypted" ? "Decrypt" : "Review"}
-                  </Button>
-                </div>
-              </div>
+          {assessments.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Shield className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
+              <p className="text-lg font-medium mb-2">No Assessment Data</p>
+              <p className="text-sm">Submit your first assessment to see it here</p>
             </div>
-          ))}
+          ) : (
+            assessments.map((assessment, index) => (
+              <div
+                key={assessment.id || index}
+                className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border/50 transition-smooth hover:bg-muted/50"
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="flex flex-col">
+                    <span className="font-medium text-foreground">
+                      {assessment.id ? `Assessment ${assessment.id.slice(0, 8)}...` : `Assessment #${index + 1}`}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {assessment.user ? `${assessment.user.slice(0, 6)}...${assessment.user.slice(-4)}` : 'Unknown User'}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(Number(assessment.timestamp) * 1000).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-6">
+                  <div className="text-center">
+                    <div className="text-sm font-medium text-foreground">
+                      {assessment.depositAmount ? `${(Number(assessment.depositAmount) / 1e18).toFixed(4)} ETH` : 'N/A'}
+                    </div>
+                    <div className="text-xs text-muted-foreground">Deposit</div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="text-sm font-medium text-foreground">
+                      {assessment.isProcessed ? 'Processed' : 'Pending'}
+                    </div>
+                    <div className="text-xs text-muted-foreground">Status</div>
+                  </div>
+                  
+                  <Badge 
+                    variant={assessment.isProcessed ? "secondary" : "outline"}
+                    className="min-w-[80px]"
+                  >
+                    {assessment.isProcessed ? "Completed" : "Encrypted"}
+                  </Badge>
+                  
+                  <div className="flex items-center space-x-2">
+                    {decryptedData[assessment.id] ? (
+                      <div className="flex items-center space-x-2">
+                        <Unlock className="w-4 h-4 text-green-500" />
+                        <span className="text-sm text-green-500">Decrypted</span>
+                        <div className="text-xs text-muted-foreground">
+                          Risk Score: {decryptedData[assessment.id]?.riskScore || 'N/A'}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <Lock className="w-4 h-4 text-warning" />
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleDecrypt(assessment.id)}
+                          disabled={decrypting === assessment.id}
+                          className="text-primary hover:text-primary-glow"
+                        >
+                          {decrypting === assessment.id ? (
+                            <>
+                              <RefreshCw className="w-3 h-3 mr-1 animate-spin" />
+                              Decrypting...
+                            </>
+                          ) : (
+                            "Decrypt & View"
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
     </div>

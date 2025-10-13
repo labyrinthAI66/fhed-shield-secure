@@ -9,6 +9,7 @@ import { config } from './lib/wallet';
 import Index from "./pages/Index";
 import SecureAssessment from "./pages/SecureAssessment";
 import NotFound from "./pages/NotFound";
+import FHETest from "./components/FHETest";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/assessment" element={<SecureAssessment />} />
+              <Route path="/fhe-test" element={<FHETest />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

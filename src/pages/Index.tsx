@@ -2,9 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { UnderwritingDashboard } from "@/components/UnderwritingDashboard";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Shield, Lock, Database, CheckCircle } from "lucide-react";
+import { Shield, Lock } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -18,18 +17,17 @@ const Index = () => {
         <div className="text-center mb-12">
           <div className="inline-flex items-center px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6">
             <Shield className="w-4 h-4 text-accent mr-2" />
-            <span className="text-sm font-medium text-accent">Fully Homomorphic Encryption Protected</span>
+            <span className="text-sm font-medium text-accent">FHE Protected</span>
           </div>
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             <span className="bg-gradient-hero bg-clip-text text-transparent">
-              Underwriting Protected by FHE
+              FHE Shield Secure
             </span>
           </h1>
           
           <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Revolutionary insurance underwriting platform that keeps risk assessment data encrypted 
-            until finalized, preventing data leaks and ensuring maximum security.
+            Privacy-preserving financial assessment platform using Fully Homomorphic Encryption
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -40,51 +38,17 @@ const Index = () => {
               onClick={() => navigate("/assessment")}
             >
               <Lock className="w-5 h-5 mr-2" />
-              Start Secure Assessment
+              Start Assessment
             </Button>
-            <Button variant="outline" size="lg" className="border-border hover:bg-muted/50">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-border hover:bg-muted/50"
+              onClick={() => window.open('https://www.zama.ai/', '_blank')}
+            >
               Learn About FHE
             </Button>
           </div>
-        </div>
-
-        {/* Security Features */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card className="gradient-card border-border/50 shadow-card text-center">
-            <CardHeader>
-              <div className="mx-auto w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
-                <Database className="w-6 h-6 text-accent" />
-              </div>
-              <CardTitle>Encrypted Processing</CardTitle>
-              <CardDescription>
-                All risk data remains encrypted during computation
-              </CardDescription>
-            </CardHeader>
-          </Card>
-          
-          <Card className="gradient-card border-border/50 shadow-card text-center">
-            <CardHeader>
-              <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <Lock className="w-6 h-6 text-primary" />
-              </div>
-              <CardTitle>Zero Data Leaks</CardTitle>
-              <CardDescription>
-                Sensitive information never exposed during analysis
-              </CardDescription>
-            </CardHeader>
-          </Card>
-          
-          <Card className="gradient-card border-border/50 shadow-card text-center">
-            <CardHeader>
-              <div className="mx-auto w-12 h-12 bg-gradient-security rounded-lg flex items-center justify-center mb-4">
-                <CheckCircle className="w-6 h-6 text-white" />
-              </div>
-              <CardTitle>Regulatory Compliant</CardTitle>
-              <CardDescription>
-                Meets all privacy and security requirements
-              </CardDescription>
-            </CardHeader>
-          </Card>
         </div>
 
         {/* Dashboard */}

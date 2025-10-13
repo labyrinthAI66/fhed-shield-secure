@@ -106,12 +106,6 @@ export const FHEShieldSecureABI = [
         "internalType": "bytes32",
         "name": "assessmentId",
         "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "encryptedScore",
-        "type": "uint256"
       }
     ],
     "name": "RiskScoreCalculated",
@@ -154,13 +148,105 @@ export const FHEShieldSecureABI = [
       },
       {
         "internalType": "uint256",
-        "name": "encryptedScore",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "depositAmount",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_assessmentId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getEncryptedAssessmentData",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "revenue",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "employees",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint8",
+        "name": "industry",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "businessType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "riskHistory",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "complianceLevel",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint32",
+        "name": "coverageAmount",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "deductible",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "riskScore",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "getEncryptedUserAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_assessmentId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRiskScore",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
       }
     ],
     "stateMutability": "view",
@@ -263,11 +349,6 @@ export const FHEShieldSecureABI = [
         "internalType": "bytes32",
         "name": "_assessmentId",
         "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_encryptedScore",
-        "type": "uint256"
       }
     ],
     "name": "processAssessment",
@@ -278,8 +359,48 @@ export const FHEShieldSecureABI = [
   {
     "inputs": [
       {
+        "internalType": "uint32",
+        "name": "_revenueEncrypted",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_employeesEncrypted",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_industryEncrypted",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_businessTypeEncrypted",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_riskHistoryEncrypted",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_complianceLevelEncrypted",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_coverageAmountEncrypted",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_deductibleEncrypted",
+        "type": "uint32"
+      },
+      {
         "internalType": "bytes",
-        "name": "_encryptedData",
+        "name": "_inputProof",
         "type": "bytes"
       },
       {

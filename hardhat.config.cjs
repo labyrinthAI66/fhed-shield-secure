@@ -1,16 +1,18 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("@nomicfoundation/hardhat-verify");
+require("@fhevm/hardhat-plugin");
 require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: {
-    version: "0.8.19",
+    version: "0.8.24",
     settings: {
       optimizer: {
         enabled: true,
         runs: 200,
       },
+      viaIR: true,
     },
   },
   networks: {
@@ -18,7 +20,7 @@ module.exports = {
       chainId: 31337,
     },
     sepolia: {
-      url: process.env.NEXT_PUBLIC_RPC_URL || "https://sepolia.infura.io/v3/b18fb7e6ca7045ac83c41157ab93f990",
+      url: process.env.SEPOLIA_RPC_URL || "https://1rpc.io/sepolia",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 11155111,
     },
@@ -28,5 +30,9 @@ module.exports = {
   },
   sourcify: {
     enabled: true,
+  },
+  fhevm: {
+    // FHE configuration
+    network: "sepolia",
   },
 };
